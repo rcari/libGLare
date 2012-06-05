@@ -10,3 +10,10 @@
 *.lai
 *.la
 *.a
+
+# Eclipse project files
+.project
+.cproject
+
+# SVN stuff
+.svn
