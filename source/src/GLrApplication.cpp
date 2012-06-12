@@ -66,5 +66,5 @@ GLrApplication::~GLrApplication()
 
 QString GLrApplication::Version()
 {
-	return QString::fromAscii(_GLR_VERSION);
+	return QString::fromAscii(_GLARE_VERSION);
 }
