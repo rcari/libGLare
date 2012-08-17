@@ -66,8 +66,7 @@ void WMesh_GL2::updateVerticesVBO()
 	// Lock the renderer to do our stuff
 	RendererLocker locker(this->renderer());
 
-	// Lock the data source to copy
-	QMutexLocker verticesLocker(mesh()->verticesBuffer()->mutex());
+	// TODO: Lock the data source to copy
 
 	// Perform the copy.
 	_vertices->create(

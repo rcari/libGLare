@@ -102,9 +102,6 @@ void Renderer::renderScene(WVisualScene* scene, ICamera* camera)
 
 ElementNode* Renderer::getWrapperForElement(Element* element)
 {
-	// Lock the element for a sec...
-	QMutexLocker locker(element->mutex());
-
 	// Lock the renderer and make the context current !
 	RendererLocker rendererLock(this);
 

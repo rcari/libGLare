@@ -56,8 +56,8 @@ ElementNode::ElementNode(Renderer* renderer, Element* element, kuint type)
 :	Node(renderer, type),
  	_element(element)
 {
-	QMutexLocker locker(_element->mutex());
 	// Store this wrapper as a dynamic property of the Element.
+	// TODO: Wrap that in a simple API call that takes care of threading issues at the MetaBlock level!
 	_element->setProperty(
 			qPrintable(renderer->runtimeID()),
 			qVariantFromValue(static_cast<kvoid*>(this))
@@ -73,8 +73,8 @@ ElementNode::ElementNode(Renderer* renderer, Element* element, kuint type)
 
 ElementNode::~ElementNode()
 {
-	QMutexLocker locker(_element->mutex());
 	// Un-store this wrapper as a dynamic property of the Element.
+	// TODO: Wrap that in a simple API call that takes care of threading issues at the MetaBlock level!
 	_element->setProperty(qPrintable(renderer()->runtimeID()), QVariant());
 }
 
