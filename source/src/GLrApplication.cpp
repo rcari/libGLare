@@ -28,6 +28,7 @@
 
 #include <GLrApplication.hpp>
 #include <GLrEngine.hpp>
+#include <GLrModule.hpp>
 using namespace GLr;
 
 #include <KoreApplication.hpp>
@@ -50,6 +51,8 @@ GLrApplication::GLrApplication(kint argc, kchar** argv)
 	K_ASSERT( _Instance == K_NULL )
 
 	_Instance = this;
+
+	GLrModule::PrivateInstance()->load();
 
 	// Create Pantin's Internals
 	_glrLib = new Library(Block::System);

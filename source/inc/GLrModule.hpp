@@ -32,9 +32,14 @@
 
 namespace GLr {
 
+class GLrApplication;
+
 class GLrModule : public Kore::plugin::Module
 {
+	Q_OBJECT
 	K_MODULE
+
+	friend class GLrApplication;
 
 public:
 	virtual QString name() const;

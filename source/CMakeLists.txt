@@ -38,13 +38,13 @@ SET (
 		
 		inc/GLrApplication.hpp
 		inc/GLrExport.hpp
-		inc/GLrModule.hpp
 	)
 	
 SET (
 		GLr_MOC_HDRS
 		
 		inc/GLrEngine.hpp
+		inc/GLrModule.hpp
 	)
 
 INCLUDE ( inc/graph/headers.cmake )
