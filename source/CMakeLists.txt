@@ -25,6 +25,7 @@ SET (
 		
 		src/GLrApplication.cpp
 		src/GLrEngine.cpp
+		src/GLrModule.cpp
 	)
 
 INCLUDE ( src/graph/sources.cmake )
@@ -37,6 +38,7 @@ SET (
 		
 		inc/GLrApplication.hpp
 		inc/GLrExport.hpp
+		inc/GLrModule.hpp
 	)
 	
 SET (

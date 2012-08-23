@@ -49,6 +49,8 @@ using namespace GLr::graph;
 
 #include <QtCore/QMutexLocker>
 
+#include <GLrModule.hpp>
+
 #define K_BLOCK_TYPE GLr::rendering::Renderer
 #include <BlockMacros.hpp>
 K_BLOCK_BEGIN
