@@ -47,8 +47,8 @@ namespace wrappers {
 class GLrExport IWrapperGenerator : public Kore::data::BlockExtension
 {
 public:
-	IWrapperGenerator()
-	: 	BlockExtension(GLR_WRAPPER_GENERATOR_NAME)
+	IWrapperGenerator(const QString& name)
+	: 	BlockExtension(name, GLR_WRAPPER_GENERATOR_NAME)
 	{
 	}
 
@@ -76,7 +76,7 @@ public:
 	static Generator __GLr_Generator;
 
 #define GLR_GENERATOR_I_BEGIN
-#define GLR_GENERATOR_I_BEGIN_REGISTRATION		GLR_GENERATOR_TYPE::Generator::Generator() {
+#define GLR_GENERATOR_I_BEGIN_REGISTRATION		GLR_GENERATOR_TYPE::Generator::Generator() : GLr::wrappers::IWrapperGenerator(K_BLOCK_XSTR(GLR_GENERATOR_TYPE)) {
 #define GLR_GENERATOR_I_REGISTER( element )		K_BLOCK_EXTENSION_REGISTER( element )
 #define GLR_GENERATOR_I_END_REGISTRATION		} GLR_GENERATOR_TYPE::Generator::~Generator() {}
 
