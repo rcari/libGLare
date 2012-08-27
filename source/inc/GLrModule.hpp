@@ -51,4 +51,4 @@ public:
 }
 
 #define K_MODULE_TYPE GLr::GLrModule
-#include <ModuleMacros.hpp>
+#include <plugin/ModuleMacros.hpp>
