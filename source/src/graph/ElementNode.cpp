@@ -37,95 +37,101 @@ using namespace Kore::data;
 #include <QtCore/QThread>
 #include <QtCore/QVariant>
 
-namespace GLr { namespace graph {
+namespace {
+
 class AddChildNodeEvent : public QEvent
 {
 public:
-	AddChildNodeEvent(Node* child)
-	:	QEvent(QEvent::User),
- 	child(child)
-	{
-	}
+    AddChildNodeEvent( Node* c )
+    : QEvent( QEvent::User )
+    , child( c )
+    {
+    }
 
 public:
-	Node* const child;
+    Node* const child;
 };
-}}
 
-ElementNode::ElementNode(Renderer* renderer, Element* element, kuint type)
-:	Node(renderer, type),
- 	_element(element)
+}
+
+ElementNode::ElementNode( Renderer* renderer, Element* element, kuint type )
+    : Node( renderer, type )
+    , _element( element )
 {
-	// Store this wrapper as a dynamic property of the Element.
-	// TODO: Wrap that in a simple API call that takes care of threading issues at the MetaBlock level!
-	_element->setProperty(
-			qPrintable(renderer->runtimeID()),
-			qVariantFromValue(static_cast<kvoid*>(this))
-		);
+    // Store this wrapper as a dynamic property of the Element.
+    // TODO: Wrap that in a simple API call that takes care of threading issues
+    // at the MetaBlock level!
+    _element->setProperty(
+            qPrintable( renderer->runtimeID() ),
+            qVariantFromValue( static_cast< kvoid* >( this ) )
+        );
 
-	// To be notified of new elements
-	connect(element, SIGNAL(elementAdded(Nigel::COLLADA::Element*)), SLOT(elementAdded(Nigel::COLLADA::Element*)));
-	// Delete when the element is deleted (no leaking).
-	connect(element, SIGNAL(blockRemoved()), SLOT(elementWasRemoved()));
-	// Delete when the element is deleted (no leaking).
-	connect(element, SIGNAL(blockDeleted()), SLOT(destroy()));
+    // To be notified of new elements
+    connect( element, SIGNAL( elementAdded( Nigel::COLLADA::Element* ) ),
+             SLOT( elementAdded( Nigel::COLLADA::Element* ) ) );
+    // Delete when the element is deleted (no leaking).
+    connect( element, SIGNAL( blockRemoved() ), SLOT( elementWasRemoved() ) );
+    // Delete when the element is deleted (no leaking).
+    connect( element, SIGNAL( blockDeleted() ), SLOT( destroy() ) );
 }
 
 ElementNode::~ElementNode()
 {
-	// Un-store this wrapper as a dynamic property of the Element.
-	// TODO: Wrap that in a simple API call that takes care of threading issues at the MetaBlock level!
-	_element->setProperty(qPrintable(renderer()->runtimeID()), QVariant());
+    // Un-store this wrapper as a dynamic property of the Element.
+    // TODO: Wrap that in a simple API call that takes care of threading issues
+    // at the MetaBlock level!
+    _element->setProperty( qPrintable( renderer()->runtimeID() ), QVariant() );
 }
 
 void ElementNode::destroy()
 {
-	// Clean delete later !
-	deleteLater();
+    // Clean delete later !
+    deleteLater();
 }
 
-void ElementNode::addChildNode(Node* child)
+void ElementNode::addChildNode( Node* child )
 {
-	if(this->thread() == QThread::currentThread())
-	{
-		// Add the node immediately if this is the object's thread.
-		Node::addChildNode(child);
-	}
-	else
-	{
-		// Add the child by posting a message to the owner thread.
-		AddChildNodeEvent* event = new AddChildNodeEvent(child);
-		QCoreApplication::postEvent(this, event);
-	}
+    if( this->thread() == QThread::currentThread() )
+    {
+        // Add the node immediately if this is the object's thread.
+        Node::addChildNode( child );
+    }
+    else
+    {
+        // Add the child by posting a message to the owner thread.
+        AddChildNodeEvent* event = new AddChildNodeEvent( child );
+        QCoreApplication::postEvent( this, event );
+    }
 }
 
 ElementNode* ElementNode::toElementNode()
 {
-	return this;
+    return this;
 }
 
-void ElementNode::addWrappedChild(Element* element)
+void ElementNode::addWrappedChild( Element* element )
 {
-	ElementNode* node = renderer()->getWrapperForElement(element);
-	if(node)
-	{
-		addChildNode(node);
-	}
+    ElementNode* node = renderer()->getWrapperForElement( element );
+    if( node )
+    {
+        addChildNode( node );
+    }
 }
 
-void ElementNode::customEvent(QEvent* e)
+void ElementNode::customEvent( QEvent* e )
 {
-	K_ASSERT(e->type() == QEvent::User)
-	// We might be again in another thread than the actual thread of that node, so do it properly !
-	addChildNode(static_cast<AddChildNodeEvent*>(e)->child);
+    K_ASSERT( e->type() == QEvent::User )
+    // We might be again in another thread than the actual thread of that node,
+    // so do it properly !
+    addChildNode( static_cast< AddChildNodeEvent* >( e )->child );
 }
 
-void ElementNode::elementAdded(Nigel::COLLADA::Element* element)
+void ElementNode::elementAdded( Nigel::COLLADA::Element* element )
 {
-	addWrappedChild(element);
+    addWrappedChild( element );
 }
 
 void ElementNode::elementWasRemoved()
 {
-	removeFromTree();
+    removeFromTree();
 }

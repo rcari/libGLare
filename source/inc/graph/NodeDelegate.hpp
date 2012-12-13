@@ -42,10 +42,10 @@ namespace graph {
 class GLrExport NodeDelegate
 {
 public:
-	virtual ~NodeDelegate() {}
+    virtual ~NodeDelegate() {}
 
-	virtual void renderNode(Node* node, GLr::rendering::IContext&) = K_NULL;
-	virtual void leaveNode(Node* node, GLr::rendering::IContext&) = K_NULL;
+    virtual void renderNode( Node* node, GLr::rendering::IContext& ) = K_NULL;
+    virtual void leaveNode( Node* node, GLr::rendering::IContext& ) = K_NULL;
 };
 
 }}

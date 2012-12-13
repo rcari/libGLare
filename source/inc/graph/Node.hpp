@@ -47,84 +47,85 @@ namespace graph {
 
 class ElementNode;
 
-class GLrExport Node : public GLr::rendering::IRendererObject, protected NodeDelegate
+class GLrExport Node
+    : public GLr::rendering::IRendererObject
+    , protected NodeDelegate
 {
-
 public:
-	enum Type
-	{
-		Undefined		= 0x0,
+    enum Type
+    {
+        Undefined       = 0x0,
 
-		// Track-able nodes
-		Camera			= 0x1 << 0,
-		Light			= 0x1 << 1,
-		Trackable		= Camera | Light,
+        // Track-able nodes
+        Camera          = 0x1 << 0,
+        Light           = 0x1 << 1,
+        Trackable       = Camera | Light,
 
-		// Pre-visit nodes
-		Acceleration	= 0x1 << 2,
-		Transform		= 0x1 << 3,
-		Texture			= 0x1 << 4,
-		Shader			= 0x1 << 5,
-		PrivateData		= 0x1 << 6,
-		PreVisit		= Acceleration | Transform | Texture | Shader,
+        // Pre-visit nodes
+        Acceleration    = 0x1 << 2,
+        Transform       = 0x1 << 3,
+        Texture         = 0x1 << 4,
+        Shader          = 0x1 << 5,
+        PrivateData     = 0x1 << 6,
+        PreVisit        = Acceleration | Transform | Texture | Shader,
 
-		// Visit types
-		Geometry		= 0x1 << 7,
-		SceneNode		= 0x1 << 8,
-		Visit			= Geometry | SceneNode,
-	};
+        // Visit types
+        Geometry        = 0x1 << 7,
+        SceneNode       = 0x1 << 8,
+        Visit           = Geometry | SceneNode
+    };
 
 protected:
-	Node(GLr::rendering::Renderer* renderer, kuint type);
-	virtual ~Node();
+    Node( GLr::rendering::Renderer* renderer, kuint type );
+    virtual ~Node();
 
 public:
-	virtual void destroy();
+    virtual void destroy();
 
-	inline kuint type() const { return _type; }
+    inline kuint type() const { return _type; }
 
-	virtual void addChildNode(Node* child);
-	virtual void removeChildNode(Node* child);
+    virtual void addChildNode( Node* child );
+    virtual void removeChildNode( Node* child );
 
-	Node** preVisitNodes();
-	inline kint preVisitNodesNb() const { return _childrenOffset; }
+    Node** preVisitNodes();
+    inline kint preVisitNodesNb() const { return _childrenOffset; }
 
-	Node** children();
-	inline kint childrenNb() const { return _parentsOffset - _childrenOffset; }
+    Node** children();
+    inline kint childrenNb() const { return _parentsOffset - _childrenOffset; }
 
-	Node** parents();
-	inline kint parentsNb() const { return _links.size() - _parentsOffset; }
+    Node** parents();
+    inline kint parentsNb() const { return _links.size() - _parentsOffset; }
 
-	void installDelegate(NodeDelegate* delegate);
-	void uninstallDelegate();
+    void installDelegate( NodeDelegate* delegate );
+    void uninstallDelegate();
 
-	virtual ElementNode* toElementNode();
+    virtual ElementNode* toElementNode();
 
 private:
-	bool addParentNode(Node* parent);
-	void removeParentNode(Node* parent);
+    bool addParentNode( Node* parent );
+    void removeParentNode( Node* parent );
 
 protected:
-	void removeFromTree();
+    void removeFromTree();
 
 public:
-	virtual kbool enterNode(GLr::rendering::IContext& context);
-	void visitNode(GLr::rendering::IContext& context);
-	void leaveNode(GLr::rendering::IContext& context);
+    virtual kbool enterNode( GLr::rendering::IContext& context );
+    void visitNode( GLr::rendering::IContext& context );
+    void leaveNode( GLr::rendering::IContext& context );
 
 protected:
-	virtual void renderNode(Node* node, GLr::rendering::IContext&);
-	virtual void leaveNode(Node* node, GLr::rendering::IContext&);
+    virtual void renderNode( Node* node, GLr::rendering::IContext& );
+    virtual void leaveNode( Node* node, GLr::rendering::IContext& );
 
 protected:
-	QVector<Node*>	_links;
-	kint			_childrenOffset;
-	kint			_parentsOffset;
+    QVector< Node* > _links;
+    kint _childrenOffset;
+    kint _parentsOffset;
 
 private:
-	NodeDelegate*	_delegate;
-	kuint			_type;
-	kbool			_preventDestroy;
+    NodeDelegate* _delegate;
+    kuint _type;
+    kbool _preventDestroy;
 };
 
 }}

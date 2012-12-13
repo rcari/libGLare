@@ -32,174 +32,170 @@ using namespace GLr::graph;
 #include <rendering/IContext.hpp>
 using namespace GLr::rendering;
 
-Node::Node(Renderer* renderer, kuint type)
-:	IRendererObject(renderer),
- 	_childrenOffset(0),
- 	_parentsOffset(0),
- 	_delegate(this),
- 	_type(type),
- 	_preventDestroy(false)
+Node::Node( Renderer* renderer, kuint type )
+    : IRendererObject( renderer )
+    , _childrenOffset( 0 )
+    , _parentsOffset( 0 )
+    , _delegate( this )
+    , _type( type )
+    , _preventDestroy( false )
 {
 }
 
 Node::~Node()
 {
-	_preventDestroy = true;
+    _preventDestroy = true;
 
-	QVector<Node*> children = _links.mid(0, _parentsOffset);
-	QVector<Node*> parents = _links.mid(_parentsOffset);
+    QVector< Node* > children = _links.mid( 0, _parentsOffset );
+    QVector< Node* > parents = _links.mid( _parentsOffset );
 
-	// Remove children (pre-visit + child nodes)
-	for(kint i = 0; i < children.size(); i++)
-	{
-		// Get rid of the children.
-		removeChildNode(children.at(i));
-	}
+    // Remove children (pre-visit + child nodes)
+    for( kint i = 0; i < children.size(); ++i )
+    {
+        // Get rid of the children.
+        removeChildNode( children.at( i ) );
+    }
 
-	// Remove parents
-	for(kint i = 0; i < parents.size(); i++)
-	{
-		// Tell the parents we are gone.
-		parents.at(i)->removeChildNode(this);
-	}
+    // Remove parents
+    for( kint i = 0; i < parents.size(); ++i )
+    {
+        // Tell the parents we are gone.
+        parents.at( i )->removeChildNode( this );
+    }
 }
 
 void Node::destroy()
 {
-	delete this;
+    delete this;
 }
 
-void Node::addChildNode(Node* child)
+void Node::addChildNode( Node* child )
 {
-	// Only add the child node if it is not already a child.
-	if( child->addParentNode(this) )
-	{
-		if(child->type() & PreVisit)
-		{
-			_links.insert(_childrenOffset, child);
-			_childrenOffset++;
-		}
-		else
-		{
-			_links.insert(_childrenOffset, child);
-		}
-
-		_parentsOffset++;
-	}
+    // Only add the child node if it is not already a child.
+    if( child->addParentNode( this ) )
+    {
+        if( child->type() & PreVisit )
+        {
+            _links.insert( _childrenOffset, child );
+            ++_childrenOffset;
+        }
+        else
+        {
+            _links.insert( _childrenOffset, child );
+        }
+        ++_parentsOffset;
+    }
 }
 
-void Node::removeChildNode(Node* child)
+void Node::removeChildNode( Node* child )
 {
-	K_ASSERT( _links.indexOf(child) < _parentsOffset )
+    //K_ASSERT( _links.indexOf( child ) < _parentsOffset )
 
-	if(child->type() & PreVisit)
-	{
-		child->removeParentNode(this);
-		_links.remove(_links.indexOf(child));
-		_childrenOffset--;
-	}
-	else
-	{
-		child->removeParentNode(this);
-		_links.remove(_links.indexOf(child, _childrenOffset));
-	}
-
-	_parentsOffset--;
+    if( child->type() & PreVisit )
+    {
+        child->removeParentNode( this );
+        _links.remove( _links.indexOf( child ) );
+        --_childrenOffset;
+    }
+    else
+    {
+        child->removeParentNode( this );
+        _links.remove( _links.indexOf( child, _childrenOffset ) );
+    }
+    --_parentsOffset;
 }
 
 Node** Node::preVisitNodes()
 {
-	return _links.data();
+    return _links.data();
 }
 
 Node** Node::children()
 {
-	return (_links.data() + _childrenOffset);
+    return ( _links.data() + _childrenOffset );
 }
 
 Node** Node::parents()
 {
-	return (_links.data() + _parentsOffset);
+    return ( _links.data() + _parentsOffset );
 }
 
-void Node::installDelegate(NodeDelegate* delegate)
+void Node::installDelegate( NodeDelegate* delegate )
 {
-	_delegate = delegate;
+    _delegate = delegate;
 }
 
 void Node::uninstallDelegate()
 {
-	_delegate = this;
+    _delegate = this;
 }
 
 ElementNode* Node::toElementNode()
 {
-	return K_NULL;
+    return K_NULL;
 }
 
-bool Node::addParentNode(Node* parent)
+bool Node::addParentNode( Node* parent )
 {
-	// No need for the child node to have this parent multiple times.
-	if( _links.contains(parent) )
-	{
-		return false;
-	}
-	else
-	{
-		_links.append(parent);
-		return true;
-	}
-
+    // No need for the child node to have this parent multiple times.
+    if( _links.contains( parent ) )
+    {
+        return false;
+    }
+    else
+    {
+        _links.append( parent );
+        return true;
+    }
 }
 
-void Node::removeParentNode(Node* parent)
+void Node::removeParentNode( Node* parent )
 {
-	int index = _links.indexOf(parent, _parentsOffset);
-	K_ASSERT( index != -1 )
-	_links.remove(index);
+    int index = _links.indexOf( parent, _parentsOffset );
+    K_ASSERT( index != -1 )
+    _links.remove( index );
 
-	if( !_preventDestroy && (_parentsOffset == _links.size()) )
-	{
-		qDebug("Destroying node @ %p because its an orphan !", this);
-		destroy(); // We don't have a parent anymore, we have to go !
-	}
+    if( ( ! _preventDestroy ) && ( _parentsOffset == _links.size() ) )
+    {
+        qDebug( "Destroying node @ %p because its an orphan !", this );
+        destroy(); // We don't have a parent anymore, we have to go !
+    }
 }
 
 void Node::removeFromTree()
 {
-	_preventDestroy = true;
+    _preventDestroy = true;
 
-	QVector<Node*> parents = _links.mid(_parentsOffset);
+    QVector< Node* > parents = _links.mid( _parentsOffset );
 
-	for(kint i = 0; i < parents.size(); i++)
-	{
-		parents.at(i)->removeChildNode(this);
-	}
-
-	_preventDestroy = false;
+    for( kint i = 0; i < parents.size(); ++i )
+    {
+        parents.at( i )->removeChildNode( this );
+    }
+    _preventDestroy = false;
 }
 
-kbool Node::enterNode(IContext& ctx)
+kbool Node::enterNode( IContext& ctx )
 {
-	return ctx.activeNodeTypes() & _type;
+    return ctx.activeNodeTypes() & _type;
 }
 
-void Node::visitNode(IContext& ctx)
+void Node::visitNode( IContext& ctx )
 {
-	_delegate->renderNode(this, ctx);
+    _delegate->renderNode( this, ctx );
 }
 
-void Node::leaveNode(IContext& ctx)
+void Node::leaveNode( IContext& ctx )
 {
-	_delegate->leaveNode(this, ctx);
+    _delegate->leaveNode( this, ctx );
 }
 
-void Node::renderNode(Node* node, IContext&)
+void Node::renderNode( Node* node, IContext& )
 {
-	K_ASSERT( node == this )
+    K_ASSERT( node == this )
 }
 
-void Node::leaveNode(Node* node, IContext&)
+void Node::leaveNode( Node* node, IContext& )
 {
-	K_ASSERT( node == this )
+    K_ASSERT( node == this )
 }

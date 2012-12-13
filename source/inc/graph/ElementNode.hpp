@@ -36,40 +36,44 @@
 
 namespace GLr { namespace graph {
 
-class GLrExport ElementNode : public QObject, public Node
+class GLrExport ElementNode
+    : public QObject
+    , public Node
 {
-	Q_OBJECT
+    Q_OBJECT
 
 protected:
-	ElementNode(GLr::rendering::Renderer* renderer, Nigel::COLLADA::Element* element, kuint type);
+    ElementNode( GLr::rendering::Renderer* renderer,
+                 Nigel::COLLADA::Element* element, kuint type );
 
 public:
-	virtual ~ElementNode();
+    virtual ~ElementNode();
 
-	template<typename T>
-	inline const T* element() { return static_cast<const T*>(_element); }
+    template< typename T >
+    inline const T* element() { return static_cast< const T* >( _element ); }
 
-	/*!
-	 * This method is safe to use from another thread than this ElementNode's current thread.
-	 */
-	virtual void addChildNode(Node* child);
+    /*!
+     * This method is safe to use from another thread than this ElementNode's
+     * current thread.
+     */
+    virtual void addChildNode( Node* child );
 
-	virtual ElementNode* toElementNode();
+    virtual ElementNode* toElementNode();
 
 protected:
-	void addWrappedChild(Nigel::COLLADA::Element* element);
+    void addWrappedChild( Nigel::COLLADA::Element* element );
 
-	virtual void customEvent(QEvent* e);
+    virtual void customEvent( QEvent* e );
 
 public slots:
-	virtual void destroy();
+    virtual void destroy();
 
 private slots:
-	void elementAdded(Nigel::COLLADA::Element* element);
-	void elementWasRemoved();
+    void elementAdded( Nigel::COLLADA::Element* element );
+    void elementWasRemoved();
 
 private:
-	Nigel::COLLADA::Element* _element;
+    Nigel::COLLADA::Element* _element;
 
 };
 

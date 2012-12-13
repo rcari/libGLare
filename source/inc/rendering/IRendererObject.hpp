@@ -43,43 +43,43 @@ namespace GLr { namespace rendering {
 class GLrExport IRendererObject
 {
 protected:
-	inline IRendererObject(Renderer* renderer) : _renderer(renderer) {}
+    inline IRendererObject( Renderer* renderer ) : _renderer( renderer ) {}
 
 public:
-	inline Renderer* renderer() { return _renderer; }
-	inline const Renderer* renderer() const { return _renderer; }
+    inline Renderer* renderer() { return _renderer; }
+    inline const Renderer* renderer() const { return _renderer; }
 
 protected:
-	// For GLEW !
-	inline GLEWContext* glewGetContext() const { return _renderer; }
+    // For GLEW !
+    inline GLEWContext* glewGetContext() const { return _renderer; }
 
 private:
-	Renderer* _renderer;
+    Renderer* _renderer;
 };
 
 class GLrExport RendererLocker
 {
 public:
-	inline RendererLocker(Renderer* renderer)
-	:	_renderer(K_NULL)
-	{
-		// Only lock the renderer's context if there is no current OpenGL context...
-		if(!QGLContext::currentContext())
-		{
-			_renderer = renderer;
-			_renderer->makeGLContextCurrent();
-		}
-	}
-	inline ~RendererLocker()
-	{
-		if(_renderer)
-		{
-			_renderer->doneGLContextCurrent();
-		}
-	}
+    inline RendererLocker( Renderer* renderer )
+        : _renderer( K_NULL )
+    {
+        // Only lock the renderer's context if there is no current OpenGL context...
+        if( ! QGLContext::currentContext() )
+        {
+            _renderer = renderer;
+            _renderer->makeGLContextCurrent();
+        }
+    }
+    inline ~RendererLocker()
+    {
+        if( _renderer )
+        {
+            _renderer->doneGLContextCurrent();
+        }
+    }
 
 private:
-	Renderer* _renderer;
+    Renderer* _renderer;
 };
 
 }}
